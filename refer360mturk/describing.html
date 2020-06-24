@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hiding Waldo!</title>
+
+  <link rel="stylesheet" href="../dist/photo-sphere-viewer.css">
+  <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+
+  <style>
+   .table-condensed{
+       font-size: 13px;
+   }
+   .panel
+   {
+       margin-top: 5px;
+       margin-bottom: 5px;
+   }
+   .alert
+   {
+       padding: 5px;
+       margin-top: 5px;
+       margin-bottom: 5px;
+   }
+   .alert_error
+   {
+       background-color:#a94442;
+       color:#f2dede;
+       margin-top: 5px;
+       margin-bottom: 5px;
+       font-weight: bold;
+   }
+   
+   .table
+   {
+       padding: 5px;
+       margin-top: 5px;
+       margin-bottom: 5px;
+   }
+   .progress
+   {
+       padding: 0px;
+       margin-top: 5px;
+       margin-bottom: 5px;
+   }
+   .btn {
+       margin-right: 1.5px;
+       margin-left: 1.5px;
+       padding: 5px;
+   }
+
+   .show_example{
+       font-weight: bold;
+       color: #700;
+       text-decoration:underline
+   }
+   .shown_example{
+       font-weight: bold;
+       color: #222;
+       }
+   #collapseTrigger{
+      display: block;
+      text-decoration: none;
+   }
+   #collapseTriggerBottom{
+      display: block;
+      text-decoration: none;
+      }  
+   .table-editable {
+       padding:0px;
+       position: absolute;
+       .glyphicon {
+	   font-size: 10px;
+       }
+   }
+
+   .table-remove {
+       color: #700;
+       cursor: pointer;
+
+       &:hover {
+	   color: #f00;
+       }
+   }
+
+   .table-add {
+       color: #070;
+       cursor: pointer;
+       position: relative;
+       top: 1px;
+       right: 0;
+
+       &:hover {
+	   color: #0b0;
+       }
+   }
+   .rowclosed{
+       display:none;
+   }
+   .rowopen{
+       display:visible;
+   }
+   #container{
+       text-align: center;
+       }
+   .column {
+       float: left;
+   }
+   .row:after {
+       content: "";
+       display: table;
+       clear: both;
+   }
+
+    html, body {
+      width: 900px;
+      height: 600px;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    #photosphere {
+      width: 400px;
+      height: 400px;
+    }
+   .btn-warning {
+       color: black !important;
+   }
+   .btn-success {
+       color: black !important;
+   }
+   .btn-danger {
+       color: black !important;
+   }
+   .table td {
+       }
+
+  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+<body>
+      <div class="row" id="mainRow">
+	<div class="column" width="400px" style="margin-left: 10px;">
+	    <div id="photosphere"></div>
+	</div>
+	<div class="column" width="400px">
+	    <div id="instructions" sid="1" uniqueid="1" class="container-fluid"></div>
+	    <div id="table" class="table-editable">
+		<table class="table">
+		    <colgroup>
+			<col style="width:10px">
+			<col style="width:450px">
+			<col style="width:10px">
+		    </colgroup> 
+		    <tr>
+			<th></th>
+			<th>List of Sentences</th>
+			<th></th>
+		    </tr>
+		    <tr class="rowopen" id="tr1">
+			<td style="text-align: center">
+			    <span style="font-weight: bold">1</span>
+			</td>
+			<td id="row1" contenteditable="true" onclick="instruction_clear(this.id)">Type your instruction sentence here!</td>
+			<td>
+			    <span id="span1"  class="table-remove glyphicon glyphicon-remove"  onclick="instruction_remove(this.id)"></span>
+			</td>
+		    </tr>
+		    <tr class="rowclosed" id="tr2">
+			<td>
+			    <span style="font-weight: bold">2</span>
+			</td>
+			<td  id="row2" contenteditable="true" onclick="instruction_clear(this.id)">Type your instruction sentence here!</td>
+			<td>
+			    <span id="span2"  class="table-remove glyphicon glyphicon-remove" onclick="instruction_remove(this.id)"></span>
+			</td>
+		    </tr>
+		    <tr class="rowclosed" id="tr3">
+			<td>
+			    <span style="font-weight: bold">3</span>
+			</td>
+			<td  id="row3" contenteditable="true" onclick="instruction_clear(this.id)">Type your instruction sentence here!</td>
+			<td>
+			    <span id="span3" class="table-remove glyphicon glyphicon-remove" onclick="instruction_remove(this.id)"></span>
+			</td>
+		    </tr>
+		    <tr class="rowclosed" id="tr4">
+			<td>
+			    <span style="font-weight: bold">4</span>
+			</td>
+			<td  id="row4" contenteditable="true" onclick="instruction_clear(this.id)">Type your instruction sentence here!</td>
+			<td>
+			    <span id="span4" class="table-remove glyphicon glyphicon-remove"  onclick="instruction_remove(this.id)"></span>
+			</td>
+		    </tr>
+		    <tr class="rowclosed" id="tr5">
+			<td>
+			    <span style="font-weight: bold">5</span>
+			</td>
+			<td  id="row5" contenteditable="true" onclick="instruction_clear(this.id)">Type your instruction sentence here!</td>
+			<td>
+			    <span id="span5" class="table-remove glyphicon glyphicon-remove" onclick="instruction_remove(this.id)"></span>
+			</td>
+		    </tr>
+		</table>
+		<div class="panel text-center">
+			<button style="display:inline-block" id="addaninstructionbutton" type="button" class="btn btn-warning btn-sm float-left" onclick="table_add()" disabled="true">
+			    <span id="addaninstruction" class="table-add glyphicon glyphicon-plus-sign" flag="0"></span> Add an Instruction Sentence</button>
+			<input style="display:inline-block" id="removealert" class="btn btn-danger" type="button" value="Remove Waldo" onclick="remove_waldo()" disabled="true">
+			<input style="display:inline-block" id="submitinstructions" class="btn btn-success" type="button" value="Submit Instructions" onclick="submit_instructions()" disabled="true">
+		</div>
+		<div id="waldoalert" class="alert alert-danger rowopen text-center" role="alert">
+		    Please first hide Waldo by clicking on the image!
+		    </br>
+		</div>
+		<div id="copypastealert" class="alert alert-danger rowclosed text-center" role="alert" flag="0">
+		    Please do not copy-paste text!<br>
+		    Instruction must start with a letter should only have following characters:<br>
+		    a-z, A-Z, 0-9, '.,:;-_'"= '
+		</div>
+		<div id="regexpalert" class="alert alert_error rowclosed text-center" role="alert" flag="0">
+		    Instruction may consist of a-z, A-Z, 0-9, '.,:;-_'"= ' and must begin with a letter.
+		</div>
+		<div id="lengthalert" class="alert alert_error rowclosed text-center" role="alert" flag="0">
+		    Instruction should have at least 5 words.
+		</div>
+		<div id="fixalert" class="alert alert_error rowclosed text-center" role="alert" flag="0">
+		</div>
+		<div id="includealert" class="alert alert_error rowclosed text-center" role="alert" flag="0">
+		    You did not use word Waldo in the last instruction!<br>The last instruction should clearly state where Waldo is.
+		</div>
+	    	<div class="progress text-center">
+		    <div feedback="" annotations="" id="progressbar" class="progress-bar bg-danger" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0/4</div>
+		</div>
+	    </div>
+	</div>
+      </div>
+    <div class="panel panel-danger text-center"><a class="panel-heading" href="javascript:void(0);" id="collapseTrigger"><strong >Hiding Waldo! Instructions</strong> <span class="collapse-text" style="font-weight: bold;color:black">(Click to Hide and Start the Task)</span> </a>
+	<div class="row panel-body" id="instructionBody">
+	    <div class="col-sm-7 text-left" style="font-size:11.5px">
+		<p>For this HIT you will describe Waldo’s location in panoramic images. Please read the instructions below carefully. On the right you see three example videos on how to complete this HIT, click on full screen icon on videos to watch them.</p>
+		<ol>
+		    <li class="litem">First, make sure that you are familiar with the whole panoramic image. While looking at the image, click and hold the mouse button while sliding left/right/up/down to change your point of view.</li>
+		    <li class="litem">Find Waldo’s hiding spot by looking around the panoramic image until you see his icon.</li>
+		    <li class="litem">Write at least three instruction sentences (and no more than five) to help someone else find Waldo’s hiding spot in this image. <span style="font-weight: bold">Note: Waldo will be invisible to the person following your instructions; they will only have your instructions to go by </span>. Further, they will look for Waldo starting from a different point of view, so make sure that you refer to distinct objects in the scene as anchor points throughout your instructions. This will help people find Waldo’s hiding spot more easily.
+			<ol type="a">
+			    <li class="litem"> Use the text boxes on the right to type in your instruction sentences in order. </li>
+			    <li class="litem"> Use "Add an Instruction Sentence" button to add another sentence. </li>
+			    <li class="litem"> Your last sentence should mention Waldo and clearly state where he is. </li>
+			    <li class="litem"> Do not use words like “go to X” or “move to Y”, the location of the person who is finding Waldo  is fixed. </li>
+			    <li class="litem"> Do not use the text you see on the images like ‘find the car with plate number X’, or “find the sign that says Y”. </li>
+			</ol>
+		    </li>
+		    <li class="litem"><span class="lspan">Once you are done with your instructions click "Submit Instructions"</span></li>
+		    <li class="litem">If you encounter any problems, please <a href="lti-crowdsourcing-009@andrew.cmu.edu">send us email</a></li>
+		</ol>
+	    </div>
+	    <div class="col-sm-1">
+		<table align="center">
+		    <tr>
+			<td align="center">
+			    <span id="s_e1" class="shown_example">Example 1</span> | <span id="s_e2" class="show_example">Example 2</span> | <span id="s_e3" class="show_example">Example 3</span><br>
+			</td>
+		    </tr>
+		    <tr>
+			<td align="center">
+			    <div id="sample_img1"><video width="360" height="180" id="example1" controls><source src="https://s3.amazonaws.com/refer360/gifs/describing1.mp4" type="video/mp4"/>
+			    </div>
+			    <div id="sample_img2"><video width="360" height="180" id="example2" controls><source src="https://s3.amazonaws.com/refer360/gifs/describing2.mp4" type="video/mp4"/>
+			    </div>
+			    <div id="sample_img3"><video width="360" height="180" id="example3" controls><source src="https://s3.amazonaws.com/refer360/gifs/describing3.mp4" type="video/mp4"/>
+			    </div>
+			</td>
+			</tr>
+		</table>
+	    </div>
+	</div>
+    </div>
+
+    <div id="dialog-form" title="Submit a new Instruction to Find Waldo">
+    </div>
+    <script src="../node_modules/three/build/three.js"></script>
+    <script src="../node_modules/d.js/lib/D.js"></script>
+    <script src="../node_modules/uevent/uevent.js"></script>
+    <script src="../node_modules/dot/doT.js"></script>
+    <script src="../node_modules/nosleep.js/dist/NoSleep.js"></script>
+    <script src="../node_modules/three/examples/js/renderers/CanvasRenderer.js"></script>
+    <script src="../node_modules/three/examples/js/renderers/Projector.js"></script>
+    <script src="../node_modules/three/examples/js/controls/DeviceOrientationControls.js"></script>
+    <script src="../node_modules/three/examples/js/effects/StereoEffect.js"></script>
+    <script src="../dist/photo-sphere-viewer.js"></script>
+    <script language="javascript">
+
+     function escapeHtml(str) {
+	 var div = document.createElement('div');
+	 div.appendChild(document.createTextNode(str));
+	 return div.innerHTML.replace('&nbsp',' ').replace('\n',' ');;
+     }
+     function ById(v) {return(document.getElementById(v));}
+
+     var content = $('#instructionBody');
+     var trigger = $('#collapseTrigger');
+     var triggerBottom = $('#collapseTriggerBottom');
+     var mainRow = $('#mainRow');
+     content.hide();
+     $('.collapse-text').text('(Click to Hide and Start the Task)');
+     trigger.click(function(){
+	 content.toggle();
+	 mainRow.toggle();
+
+
+	 var isVisible = content.is(':visible');
+	 if(isVisible){
+	     $('.collapse-text').text('(Click to Hide and Start the Task)');
+	 }else{
+	     $('.collapse-text').text('(Click to show)');
+	 }
+     });
+     triggerBottom.click(function(){
+	 content.toggle();
+	 mainRow.toggle();
+     });
+     var sample_img1   = $('#sample_img1');
+     var sample_img2   = $('#sample_img2');
+     var sample_img3   = $('#sample_img3');
+     var sample_toggle1 = $('#s_e1');
+     var sample_toggle2 = $('#s_e2');
+     var sample_toggle3 = $('#s_e3');
+
+     sample_img2.hide();
+     sample_img3.hide();
+
+     sample_toggle1.click(function(){
+	 var isVisible = sample_img1.is(':visible');
+	 if(!isVisible)
+	     {
+		 sample_img2.hide();
+		 sample_img3.hide();
+		 sample_img1.toggle();
+	   	 ById("s_e2").className="show_example";
+	   	 ById("s_e3").className="show_example";
+	   	 ById("s_e1").className="shown_example";
+	     }
+     });
+     sample_toggle2.click(function(){
+	 var isVisible = sample_img2.is(':visible');
+	 if(!isVisible)
+	     {
+		 sample_img1.hide();
+		 sample_img3.hide();
+		 sample_img2.toggle();
+	   	 ById("s_e1").className="show_example";
+	   	 ById("s_e3").className="show_example";
+	   	 ById("s_e2").className="shown_example";
+	     }
+     });
+     sample_toggle3.click(function(){
+	 var isVisible = sample_img3.is(':visible');
+	 if(!isVisible)
+	     {
+		 sample_img1.hide();
+		 sample_img2.hide();
+		 sample_img3.toggle();
+	   	 ById("s_e1").className="show_example";
+	   	 ById("s_e2").className="show_example";
+	   	 ById("s_e3").className="shown_example";
+	     }
+     });
+     var img1   = $('#img1');
+     var img2   = $('#img2');
+     var toggle = $('#toggle');
+     img1.hide();
+     $('.show_boxes').text('Click to hide boxes');
+     toggle.click(function(){
+	 img2.toggle();
+	 img1.toggle();
+	 var isVisible = img1.is(':visible');
+	 if(isVisible){
+	     toggle.text('Click to show boxes');
+	 }else{
+	     toggle.text('Click to hide boxes');
+	 }
+     });
+
+     var dia =$("#dialog-form" ).dialog({
+	 autoOpen: false});
+     var fullurl=document.location.href;
+
+     var queryDict = {};
+     location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
+     var turkerid = queryDict["workerId"];
+     var session = queryDict["session"];
+
+     var panos = [
+	 {
+	     url: 'assets/panorama0.jpg',
+	     desc: '',
+	     target: {
+		 longitude: getRandomArbitrary(0, 6),
+		 latitude: 1.5
+	     }
+	 }
+     ];
+
+     diadata = dia.data();
+     diadata.imageurl =  panos[0].url;
+
+     var PSV = new PhotoSphereViewer({
+	 container: 'photosphere',
+	 loading_img: 'assets/photosphere-logo.gif',
+	 anim_speed: '-2rpm',
+	 default_fov: 90,
+	 fisheye: false,
+	 move_speed: 1.0,
+	 time_anim: false,
+	 mousewheel:false,
+	 navbar: [
+	      'caption', 'gyroscope', // 'zoom'
+	 ],
+     });
+
+     var $TABLE = $('#table');
+     function table_add(){
+	 var addaninstruction = document.getElementById('addaninstruction');
+	 var instructions = document.getElementById('instructions');
+	 var sid = instructions.getAttribute('sid');
+	 var default_value = "Type your instruction sentence here!";
+	 var row = document.getElementById('row'+  sid.toString());
+	 var flag = addaninstruction.getAttribute('flag');
+
+ 	 var row_refexp = escapeHtml(row.innerText).toLowerCase();
+ 	 var regexpvalid = checkRegexp(row_refexp, /^[a-zA-Z]([0-9a-zA-Z\,\.\'\"\-\=\:\;\_\s])+$/i);
+	 var lengthvalid = checkSenLength(row_refexp, 5);
+
+ 	 if (!regexpvalid)
+ 	     {
+		 close_all();
+ 		 var regexpalert = document.getElementById('regexpalert');
+ 		 regexpalert.classList.remove("rowclosed");
+ 		 regexpalert.classList.add("rowopen");
+ 		 return;
+ 	     }
+ 	 if (!lengthvalid)
+ 	     {
+		 close_all();
+ 		 var lengthalert = document.getElementById('lengthalert');
+ 		 lengthalert.classList.remove("rowclosed");
+ 		 lengthalert.classList.add("rowopen");
+		 return
+ 	     }
+
+	 if(flag == "1" && row_refexp != default_value && row_refexp != "")
+	     {
+		 rows = $TABLE.children()[0].rows;
+		 trrow = $TABLE.children()[0].rows[(parseInt(sid)+1)];
+		 trrow.className = "rowopen";
+		 instructions.setAttribute('sid',(parseInt(sid)+1).toString());
+		 if((parseInt(sid)+1) == 5)
+		 {
+		     document.getElementById("addaninstructionbutton").disabled = true;
+		 }
+		 if(parseInt(sid) >= 2)
+		     {
+			 document.getElementById("submitinstructions").disabled = false;
+		     }
+		 close_all();
+		 var copypastealert = document.getElementById('copypastealert');
+		 copypastealert.classList.remove("rowclosed");
+		 copypastealert.classList.add("rowopen");
+	     }
+     }
+
+     function instruction_remove(id){
+
+	 var start = parseInt(id[4]);
+	 var instructions = document.getElementById('instructions');
+	 var end = parseInt(instructions.getAttribute('sid'));
+	 var addaninstruction = document.getElementById('addaninstruction');
+	 var flag = addaninstruction.getAttribute('flag');
+
+	 for(ii = start+1; ii<=end;ii++)
+	     {
+		 rowprev = document.getElementById('row' + (ii-1).toString());
+		 rowcurr = document.getElementById('row' + (ii).toString());
+		 escaped_str = escapeHtml(rowcurr.innerText).toLowerCase();
+		 rowprev.innerText= escaped_str;
+	     }
+	 rowend = document.getElementById('row' + (end).toString());
+	 rowend.innerText = "Type your instruction sentence here!";
+	 if(end > 1)
+	     {
+		 instructions.setAttribute('sid',end-1);
+		 trrow = document.getElementById('tr' + (end).toString());
+		 trrow.className="rowclosed";
+	     }
+	 if(end == 3) // else
+	     {
+		 document.getElementById("submitinstructions").disabled = true;
+	     }
+	 var disabled = document.getElementById("addaninstructionbutton").disabled;
+	 if(disabled == true && flag == "1")
+	     {
+		 document.getElementById("addaninstructionbutton").disabled = false;
+	     }
+     }
+
+     function table_clear()
+     {
+	 for(ii = 1; ii<=5;ii++)
+	     {
+		 row = document.getElementById('row' + (ii).toString());
+		 row.innerText= "Type your instruction sentence here!";
+		 trrow = document.getElementById('tr' + (ii).toString());
+		 trrow.className="rowclosed";
+	     }
+	 trrow = document.getElementById('tr' + (1).toString());
+	 trrow.className="rowopen";
+	 instructions.setAttribute('sid',1);
+     }
+
+     function instruction_clear(id) {
+	 var default_value = "Type your instruction sentence here!";
+	 var row = document.getElementById(id);
+	 if(row.innerText == default_value){
+	     row.innerText='';
+	 }
+     }
+
+     function close_all()
+     {
+	 var waldoalert = document.getElementById('waldoalert');
+ 	 waldoalert.classList.remove("rowopen");
+ 	 waldoalert.classList.add("rowclosed");
+
+	 var regexpalert = document.getElementById('regexpalert');
+ 	 regexpalert.classList.remove("rowopen");
+ 	 regexpalert.classList.add("rowclosed");
+
+	 var lengthalert = document.getElementById('lengthalert');
+ 	 lengthalert.classList.remove("rowopen");
+ 	 lengthalert.classList.add("rowclosed");
+
+	 var fixalert = document.getElementById('fixalert');
+ 	 fixalert.classList.remove("rowopen");
+ 	 fixalert.classList.add("rowclosed");
+
+	 var copypastealert = document.getElementById('copypastealert');
+ 	 copypastealert.classList.remove("rowopen");
+ 	 copypastealert.classList.add("rowclosed");
+
+	 var includealert = document.getElementById('includealert');
+ 	 includealert.classList.remove("rowopen");
+ 	 includealert.classList.add("rowclosed");
+     }
+
+     function submit_instructions()
+     {
+
+	 var valid = true;
+	 var instructions = document.getElementById('instructions');
+	 var end = parseInt(instructions.getAttribute('sid'));
+
+ 	 if(end > 2)
+ 	     {
+ 		 var flag = true;
+		 var refexp = '';
+ 		 for(ii = 1; ii<=end;ii++)
+ 		     {
+ 			 var row = document.getElementById('row' + (ii).toString());
+ 			 var row_refexp = escapeHtml(row.innerText).toLowerCase();
+
+ 			 var regexpvalid = checkRegexp(row_refexp, /^[a-zA-Z]([0-9a-zA-Z\,\.\'\"\-\=\:\;\_\s])+$/i);
+ 			 //var lengthvalid = checkLength(row_refexp, 10, 140);
+			 var lengthvalid = checkSenLength(row_refexp, 5);
+ 			 if (!regexpvalid)
+ 			     {
+				 close_all();
+ 				 var regexpalert = document.getElementById('regexpalert');
+ 				 regexpalert.classList.remove("rowclosed");
+ 				 regexpalert.classList.add("rowopen");
+ 				 var fixalert = document.getElementById('fixalert');
+ 				 fixalert.classList.remove("rowclosed");
+ 				 fixalert.classList.add("rowopen");
+ 				 fixalert.innerText = "Please fix instruction " + ii.toString();
+ 				 flag = false;
+ 				 break;
+ 			     }
+ 			 if (!lengthvalid)
+ 			     {
+				 close_all();
+ 				 var lengthalert = document.getElementById('lengthalert');
+ 				 lengthalert.classList.remove("rowclosed");
+ 				 lengthalert.classList.add("rowopen");
+ 				 var fixalert = document.getElementById('fixalert');
+ 				 fixalert.classList.remove("rowclosed");
+ 				 fixalert.classList.add("rowopen");
+ 				 fixalert.innerText = "Please fix instruction " + ii.toString();
+ 				 flag = false;
+ 				 break;
+ 			     }
+			 if(!(row_refexp.includes("Waldo") || row_refexp.includes("waldo")) && ii == end)
+			     {
+				 close_all();
+
+ 				 var include = document.getElementById('includealert');
+ 				 include.classList.remove("rowclosed");
+ 				 include.classList.add("rowopen");
+ 				 flag = false;
+ 				 break;
+			     }
+ 			 refexp = refexp + "|||" + row_refexp;
+ 		     }
+ 		 if(flag)
+ 		     {
+
+			 close_all();
+ 			 var progressbar = document.getElementById('progressbar');
+ 			 var progress = parseInt(progressbar.getAttribute('aria-valuenow'));
+ 			 var increment = 25;
+ 			 var total = "/"+(100 / increment).toString();
+ 			 var feedback = progressbar.getAttribute('feedback');
+ 			 progressbar.setAttribute('aria-valuenow',(parseInt(progress) + increment).toString());
+ 			 progressbar.innerText = ((parseInt(progress) + increment)/increment).toString() + total;
+ 			 progressbar.setAttribute("style", "width: " + (parseInt(progress) + increment).toString() + "%"); /// ###
+
+ 			 progress = parseInt(progress) + increment;
+
+ 			 data = { "refexp": refexp,  "turkerid" : turkerid,
+				  "session" : session,
+ 				  "longitude" :  dia.data("longitude"), "latitude" : dia.data("latitude"),
+ 				  "imageurl": dia.data("imageurl"),
+ 				  "feedback_text": feedback,
+				  "ann_cat" : 'M',
+ 			 };
+ 			 $.post({
+ 			     url: 'https://vulcan.multicomp.cs.cmu.edu:9001/annotations/',
+ 			     data: data,
+ 			     dataType: 'json',
+ 			     type: "POST",
+ 			     success: function(data) {
+ 				 if (data) {
+ 				     diadata = dia.data();
+ 				     diadata.imageurl =  data['imageurl'];
+ 				     var annotation = data['new_annotation'];
+ 				     var annotations=progressbar.getAttribute("annotations");
+ 				     progressbar.setAttribute('annotations',annotations + "|" + annotation);
+ 				     var feedback = data['feedback_text'];
+ 				     progressbar.setAttribute('feedback',feedback);
+ 				     if(progress >= 100)
+ 					 {
+ 					     var sandbox="0"
+ 					     if(fullurl.includes("sandbox")){
+ 						 sandbox="1";
+ 					     }
+ 					     var annotations=progressbar.getAttribute('annotations');
+ 					     window.location = "https://vulcan.multicomp.cs.cmu.edu:9000/refer360mturk/describing_submit.html?"+ fullurl.split("?")[1] + "&sandbox="+sandbox + "&annotations="+annotations + "&feedback="+feedback;
+ 					 }
+ 				     else{
+ 					 PSV.setPanorama(data['imageurl'],{longitude: getRandomArbitrary(0, 6),latitude: 1.5}, true)
+ 					    .then(function() {
+ 						PSV.setCaption("Take a look around!");
+ 						loading = false;
+ 					    });
+ 				     }
+ 				 }
+ 				 else {
+ 				     alert('ERROR! cannot get new image!');
+ 				 }
+ 			     }
+ 			 });
+ 			 var addaninstruction = document.getElementById('addaninstruction');
+ 			 addaninstruction.setAttribute('flag',"0");
+
+			 close_all();
+ 			 var waldoalert = document.getElementById('waldoalert');
+ 			 waldoalert.classList.remove("rowclosed");
+ 			 waldoalert.classList.add("rowopen");
+
+			 document.getElementById("removealert").disabled = true;
+ 			 document.getElementById("submitinstructions").disabled = true;
+ 			 document.getElementById("addaninstructionbutton").disabled = true;
+ 			 table_clear();
+ 			 PSV.removeMarker(PSV.getMarker(dia.data("markerid")));
+
+ 		     }
+ 	     }
+     }
+
+     function checkLength(o, min, max) {
+	 if ( o.length > max || o.length < min ) {
+	     return false;
+	 } else {
+	     return true;
+	 }
+     }
+     function checkSenLength(o, min) {
+	 var s = o.split(" ");
+	 if ( s.length < min ) {
+	     return false;
+	 } else {
+	     return true;
+	 }
+     }
+
+     function checkRegexp( o, regexp) {
+	 if ( !( regexp.test(o))){
+	     return false;
+	 } else {
+	     return true;
+	 }
+     }
+
+     function getRandomArbitrary(min, max) {
+	 return Math.random() * (max - min) + min;
+     }
+
+     PSV.zoom(0);
+
+     PSV.on('click', function(e) {
+	 var addaninstruction = document.getElementById('addaninstruction');
+	 var flag = addaninstruction.getAttribute('flag');
+
+	 if(flag == "0")
+	     {
+		 var diadata = dia.data();
+		 diadata.longitude =  e.longitude + 0.015;
+		 diadata.latitude = e.latitude - 0.10;
+
+		 var markerid = '#' + Math.random()
+		 marker = PSV.addMarker({
+		     id: markerid,
+		     tooltip: "Hi There! Double click to remove Waldo!",
+		     longitude: dia.data("longitude"),
+		     latitude: dia.data("latitude"),
+		     image: 'assets/pin1.png',
+		     width: 40,
+		     height: 40,
+		     anchor: 'bottom center',
+		     data: {
+			 deletable: true
+		     }});
+		 diadata.markerid=markerid;
+		 document.getElementById("addaninstructionbutton").disabled = false;
+		 var addaninstruction = document.getElementById('addaninstruction');
+		 addaninstruction.setAttribute('flag',"1");
+
+		 close_all();
+		 var copypastealert = document.getElementById('copypastealert');
+		 copypastealert.classList.remove("rowclosed");
+		 copypastealert.classList.add("rowopen");
+
+		 document.getElementById("removealert").disabled = false;
+	     }
+     });
+
+     function remove_waldo()
+     {
+	 PSV.removeMarker(PSV.getMarker(dia.data("markerid")));
+
+	 document.getElementById("submitinstructions").disabled = true;
+	 document.getElementById("addaninstructionbutton").disabled = true;
+	 var addaninstruction = document.getElementById('addaninstruction');
+	 addaninstruction.setAttribute('flag',"0");
+	 table_clear();
+	 close_all();
+	 var waldoalert = document.getElementById('waldoalert');
+	 waldoalert.classList.remove("rowclosed");
+	 waldoalert.classList.add("rowopen");
+
+	 document.getElementById("removealert").disabled = true;
+     }
+
+     PSV.on('select-marker', function(marker, dblclick) {
+	 if (marker.data && marker.data.deletable) {
+	     if (dblclick) {
+		 PSV.removeMarker(marker);
+		 document.getElementById("submitinstructions").disabled = true;
+		 document.getElementById("addaninstructionbutton").disabled = true;
+		 var addaninstruction = document.getElementById('addaninstruction');
+		 addaninstruction.setAttribute('flag',"0");
+		 table_clear();
+		 close_all();
+		 var waldoalert = document.getElementById('waldoalert');
+		 waldoalert.classList.remove("rowclosed");
+		 waldoalert.classList.add("rowopen");
+
+		 document.getElementById("removealert").disabled = true;
+	     }
+	     else {
+	     }
+	 }
+     });
+
+     $(document).ready(function() {
+	 content.toggle();
+	 mainRow.toggle();
+	 $.post({
+	     url: 'https://vulcan.multicomp.cs.cmu.edu:9001/next_image/' + turkerid + "/",
+	     dataType: 'json',
+	     type: "GET",
+	     data: {"imageurl":"check",},
+	     success: function(data) {
+		 diadata = dia.data();
+		 if (data) {
+		     diadata.imageurl =  data['imageurl'];
+		     PSV.setPanorama(data['imageurl'],{longitude: getRandomArbitrary(0, 6),latitude: 1.5}, true)
+			.then(function() {
+			    PSV.setCaption("Take a look around!");
+			    loading = false;
+			});
+		 }
+	     }
+	 });
+     });
+</script>
+</body>
+</html>

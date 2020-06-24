@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Onboarding - Finding Waldo!</title>
+
+  <link rel="stylesheet" href="../dist/photo-sphere-viewer.css">
+  <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+
+  <style>
+s   .table-condensed{
+       font-size: 13px;
+   }
+   .panel
+   {
+       margin-top: 5px;
+       margin-bottom: 5px;
+   }
+   .alert
+   {
+       padding: 5px;
+       margin-top: 5px;
+       margin-bottom: 5px;
+   }
+   .table
+   {
+       padding: 5px;
+       margin-top: 5px;
+       margin-bottom: 5px;
+   }
+   .progress
+   {
+       padding: 0px;
+       margin-top: 5px;
+       margin-bottom: 5px;
+   }
+   .btn {
+       margin-right: 1.5px;
+       margin-left: 1.5px;
+       padding: 5px;
+   }
+   .show_example{
+       font-weight: bold;
+       color: #700;
+       text-decoration:underline
+   }
+   .shown_example{
+       font-weight: bold;
+       color: #222;
+       }
+   #collapseTrigger{
+      display: block;
+      text-decoration: none;
+   }
+   #collapseTriggerBottom{
+      display: block;
+      text-decoration: none;
+      }  
+   .table-editable {
+       padding:0px;
+       position: absolute;
+       .glyphicon {
+	   font-size: 10px;
+       }
+   }
+
+   .table-remove {
+       color: #700;
+       cursor: pointer;
+
+       &:hover {
+	   color: #f00;
+       }
+   }
+
+   .table-add {
+       color: #070;
+       cursor: pointer;
+       position: relative;
+       top: 1px;
+       right: 0;
+
+       &:hover {
+	   color: #0b0;
+       }
+   }
+   .rowclosed{
+       display:none;
+   }
+   .rowopen{
+       display:visible;
+   }
+   #container{
+       text-align: center;
+       }
+   .column {
+       float: left;
+   }
+   .row:after {
+       content: "";
+       display: table;
+       clear: both;
+   }
+
+    html, body {
+      width: 900px;
+      height: 600px;
+      overflow: hidden;
+      margin: 0;
+      padding: 0;
+    }
+
+    #photosphere {
+      width: 400px;
+      height: 400px;
+    }
+   .btn-warning {
+       color: black !important;
+   }
+   .btn-success {
+       color: black !important;
+   }
+   .btn-danger {
+       color: black !important;
+   }
+
+  </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+<body>
+      <div class="row" id="mainRow">
+	<div class="column" width="400px" style="margin-left: 10px;">
+	    <div id="photosphere"></div>
+	</div>
+	<div class="column">
+	    <div id="instructions" sid="1" uniqueid="1" class="container-fluid"></div>
+	    <div id="table" class="table-editable table-condensed">
+		<table class="table">
+		    <colgroup>
+			<col style="width:10px">
+			<col style="width:470px">
+		    </colgroup>
+		    <tr>
+			<th></th>
+			<th>List of Instruction Sentences</th>
+		    </tr>
+		    <tr class="rowopen" id="tr1">
+			<td style="text-align: center;padding: 5px;">
+			    <span style="font-weight: bold">1</span>
+			</td>
+			<td id="row1" contenteditable="false"></td>
+		    </tr>
+		    <tr class="rowclosed" id="tr2">
+			<td style="text-align: center;padding: 5px;">
+			    <span style="font-weight: bold">2</span>
+			</td>
+			<td  id="row2" contenteditable="false"></td>
+		    </tr>
+		    <tr class="rowclosed" id="tr3">
+			<td style="text-align: center;padding: 5px;">
+			    <span style="font-weight: bold">3</span>
+			</td>
+			<td  id="row3" contenteditable="false"></td>
+		    </tr>
+		    <tr class="rowclosed" id="tr4">
+			<td style="text-align: center;padding: 5px;">
+			    <span style="font-weight: bold">4</span>
+			</td>
+			<td  id="row4" contenteditable="false"></td>
+		    </tr>
+		    <tr class="rowclosed" id="tr5">
+			<td style="text-align: center;padding: 5px;">
+			    <span style="font-weight: bold">5</span>
+			</td>
+			<td  id="row5" contenteditable="false"></td>
+		    </tr>
+		</table>
+		<div class="panel text-center">
+			<button style="display:inline-block" id="showaninstructionbutton" type="button" class="btn btn-warning btn-sm float-left" onclick="table_show()">
+			    <span id="showaninstruction" class="table-add glyphicon glyphicon-plus-sign" flag="0"></span> Show Another Sentence</button>
+			<input style="display:inline-block" id="predictwaldo" class="btn btn-info" type="button" value="Predict" onclick="predict_waldo()" disabled="true">
+			<input style="display:inline-block" id="removealert" class="btn btn-danger" type="button" value="Remove Bullseye" onclick="remove_waldo()" disabled="true">
+			<input style="display:inline-block" id="submitinstructions" class="btn btn-success" type="button" value="Next Image" onclick="next_image()" disabled="true">
+		</div>
+		<div id="anncatbuttons" class="alert alert-warning rowclosed text-center">
+		    <div class="alert alert-success">
+			<p>How difficulty is it to find Waldo with these instructions?</p>
+			<label class="radio-inline">
+			    <input type="radio" class="form-check-input" id="anncat1" name="annCategory" value="E">
+			    Easy
+			</label>
+			<label class="radio-inline">
+			    <input type="radio" class="form-check-input" id="anncat2" name="annCategory" value="M">
+			    Medium
+			</label>
+			<label class="radio-inline">
+			    <input type="radio" class="form-check-input" id="anncat3" name="annCategory" value="H">
+			Hard
+			</label>
+			<label class="radio-inline">
+			    <input type="radio" class="form-check-input" id="anncat4" name="annCategory" value="B">
+			    Impossible to Find!
+			</label><br>
+		    </div>
+		    <div class="alert alert-success">
+			<p>How clear are these instructions to describe the location of Waldo?</p>
+			<label class="radio-inline">
+			    <input type="radio" class="form-check-input" id="annclr1" name="annClarity" value="C">
+			    Clear
+			</label>
+			<label class="radio-inline">
+			    <input type="radio" class="form-check-input" id="annclr2" name="annClarity" value="S">
+			    Slightly Ambiguous
+			</label>
+			<label class="radio-inline">
+			    <input type="radio" class="form-check-input" id="annclr3" name="annClarity" value="A">
+			    Ambiguous
+			</label>
+		    </div>
+		</div>
+		<div id="waldoalert" class="alert alert-danger rowopen text-center" role="alert">
+		    Follow all instruction sentences one by one.
+		</div>
+		<div id="clickalert" class="alert alert-danger rowclosed text-center" role="alert">
+		    Please click on image to place the bullseye.
+		</div>
+		<div id="predictalert" class="alert alert-danger rowclosed text-center" role="alert">
+		    Please click on "Predict" button to reveal the true location of Waldo!
+		</div>
+		<div id="categoryalert" class="alert alert-danger rowclosed text-center" role="alert">
+		    Please rate the difficulty of finding Waldo using radio buttons above!
+		</div>
+		<div id="nextalert" class="alert alert-danger rowclosed text-center" role="alert">
+		    Please click "Next Image" button!
+		    </br>
+		</div>
+		<!-- <div id="removealert" class="alert alert-danger rowclosed text-center" role="alert">
+		     <input style="display:inline-block" id="removewaldo" class="btn btn-danger" type="button" value="Remove Bullseye" onclick="remove_waldo()">
+		     </div>
+		-->
+	    	<div class="progress text-center">
+		    <div feedback="" actions="" id="progressbar" class="progress-bar bg-danger" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0/4</div>
+		</div>
+		<div id="mousehistory" style="display:none;" role="alert">
+		</div>
+	    </div>
+	</div>
+      </div>
+
+    <div class="panel panel-danger text-center"><a align="center" class="panel-heading" href="javascript:void(0);" id="collapseTrigger"><strong >Onboarding - Finding Waldo! Instructions</strong> <span class="collapse-text" style="font-weight: bold;color:black">(Click to Hide and Start the Task)</span> </a>
+	<div class="row panel-body" id="instructionBody">
+	    <div class="col-sm-7 text-left" style="font-size:11px">
+		<p>For this onboarding task you will try to find Waldo’s hiding spot in panoramic images (360 degrees) given a list of instruction sentences written by someone who knows where he’s hiding. This onboarding task is designed to prepare you for the actual HIT tasks. It will give you an idea of how to write clear instructions for finding Waldo. Please read the instructions below carefully. On the right you see three example videos on how to complete this HIT, click on full screen icon on videos to watch them.</p>
+		<ol>
+		    <li class="litem">Before searching for Waldo, make sure that you are familiar with the whole panoramic image. While looking at the image, click and hold the mouse button while sliding left/right/up/down to change your point of view.</li>
+		    <li class="litem">Read the first instruction sentence and follow it by changing your view of the panorama. When you are as close as possible to the point of view the instruction describes, click "Show Another Sentence" to display the next instruction. </li>
+		    <li class="litem">After reading and following all instructional sentences, click at a specific location on the image to set your prediction of where Waldo is hiding. A bullseye icon will appear on the image</li>
+		    <ol type="a">
+			<li>If you want to remove your prediction, click "Remove Bullseye" or double click on the bullseye icon.</li>
+			<li>When you are ready, press the "Predict" button to confirm your prediction. This will also reveal the intended location of Waldo.</li>
+			<li class="litem">Rate the difficulty of finding Waldo using radio buttons.</li>
+			<li class="litem">Once you are done click "Next Image".</li>
+		    </ol>
+		    <li class="litem">When you complete the task 4 times you will be redirected to the actual task of hiding Waldo!</li>
+		    <li class="litem">If you encounter any problems, please <a href="mailto: lti-crowdsourcing-009@andrew.cmu.edu">send us email</a></li>
+		</ol>
+	    </div>
+	    <div class="col-sm-1">
+		<table align="center">
+		    <tr>
+			<td align="center">
+			    <span id="s_e1" class="shown_example">Example 1</span> | <span id="s_e2" class="show_example">Example 2</span> | <span id="s_e3" class="show_example">Example 3</span><br>
+			</td>
+		    </tr>
+		    <tr>
+			<td align="center">
+			    <div id="sample_img1"><video width="360" height="180" id="example1" controls><source src="https://s3.amazonaws.com/refer360/gifs/finding1.mp4" type="video/mp4"/>
+			    </div>
+			    <div id="sample_img2"><video width="360" height="180" id="example2" controls><source src="https://s3.amazonaws.com/refer360/gifs/finding2.mp4" type="video/mp4"/>
+			    </div>
+			    <div id="sample_img3"><video width="360" height="180" id="example3" controls><source src="https://s3.amazonaws.com/refer360/gifs/finding3.mp4" type="video/mp4"/>
+			    </div>
+			</td>
+		    </tr>
+		</table>
+	    </div>
+	</div>
+    </div>
+    <div id="dialog-form" title="Submit a new Instruction to Find Waldo">
+    </div>
+    <form style="display:none" id="mturk_form" method="post" action="{{turk_submit_url}}/externalSubmit">
+	<input type="hidden" name="user_id" id="user_id" />
+	<input type="hidden" name="assignmentId" value="{{assignmentId}}" />
+    </form>
+
+    <script src="../node_modules/three/build/three.js"></script>
+    <script src="../node_modules/d.js/lib/D.js"></script>
+    <script src="../node_modules/uevent/uevent.js"></script>
+    <script src="../node_modules/dot/doT.js"></script>
+    <script src="../node_modules/nosleep.js/dist/NoSleep.js"></script>
+    <script src="../node_modules/three/examples/js/renderers/CanvasRenderer.js"></script>
+    <script src="../node_modules/three/examples/js/renderers/Projector.js"></script>
+    <script src="../node_modules/three/examples/js/controls/DeviceOrientationControls.js"></script>
+    <script src="../node_modules/three/examples/js/effects/StereoEffect.js"></script>
+    <script src="../dist/photo-sphere-viewer.js"></script>
+    <script language="javascript">
+     function ById(v) {return(document.getElementById(v));}
+
+     var content = $('#instructionBody');
+     var trigger = $('#collapseTrigger');
+     var triggerBottom = $('#collapseTriggerBottom');
+     var mainRow = $('#mainRow');
+
+     content.hide();
+     $('.collapse-text').text('(Click to Hide and Start the Task)');
+     trigger.click(function(){
+	 content.toggle();
+	 mainRow.toggle();
+
+
+	 var isVisible = content.is(':visible');
+	 if(isVisible){
+	     $('.collapse-text').text('(Click to Hide and Start the Task)');
+	 }else{
+	     $('.collapse-text').text('(Click to show)');
+	 }
+     });
+     triggerBottom.click(function(){
+	 content.toggle();
+	 mainRow.toggle();
+     });
+     var sample_img1   = $('#sample_img1');
+     var sample_img2   = $('#sample_img2');
+     var sample_img3   = $('#sample_img3');
+     var sample_toggle1 = $('#s_e1');
+     var sample_toggle2 = $('#s_e2');
+     var sample_toggle3 = $('#s_e3');
+
+     sample_img2.hide();
+     sample_img3.hide();
+
+     sample_toggle1.click(function(){
+	 var isVisible = sample_img1.is(':visible');
+	 if(!isVisible)
+	     {
+		 sample_img2.hide();
+		 sample_img3.hide();
+		 sample_img1.toggle();
+	   	 ById("s_e2").className="show_example";
+	   	 ById("s_e3").className="show_example";
+	   	 ById("s_e1").className="shown_example";
+	     }
+     });
+     sample_toggle2.click(function(){
+	 var isVisible = sample_img2.is(':visible');
+	 if(!isVisible)
+	     {
+		 sample_img1.hide();
+		 sample_img3.hide();
+		 sample_img2.toggle();
+	   	 ById("s_e1").className="show_example";
+	   	 ById("s_e3").className="show_example";
+	   	 ById("s_e2").className="shown_example";
+	     }
+     });
+     sample_toggle3.click(function(){
+	 var isVisible = sample_img3.is(':visible');
+	 if(!isVisible)
+	     {
+		 sample_img1.hide();
+		 sample_img2.hide();
+		 sample_img3.toggle();
+	   	 ById("s_e1").className="show_example";
+	   	 ById("s_e2").className="show_example";
+	   	 ById("s_e3").className="shown_example";
+	     }
+     });
+     var img1   = $('#img1');
+     var img2   = $('#img2');
+     var toggle = $('#toggle');
+     img1.hide();
+     $('.show_boxes').text('Click to hide boxes');
+     toggle.click(function(){
+	 img2.toggle();
+	 img1.toggle();
+	 var isVisible = img1.is(':visible');
+	 if(isVisible){
+	     toggle.text('Click to show boxes');
+	 }else{
+	     toggle.text('Click to hide boxes');
+	 }
+     });
+
+     var dia =$("#dialog-form" ).dialog({
+	 autoOpen: false});
+     var fullurl=document.location.href;
+
+     var queryDict = {};
+     location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
+     var turkerid = queryDict["workerId"];
+     var session = queryDict["session"];
+
+     var panos = [
+	 {
+	     url: 'assets/panorama0.jpg',
+	     desc: '',
+	     target: {
+		 longitude: getRandomArbitrary(0, 6),
+		 latitude: 1.5
+	     }
+	 }
+     ];
+
+     diadata = dia.data();
+     diadata.imageurl =  panos[0].url;
+
+     var PSV = new PhotoSphereViewer({
+	 container: 'photosphere',
+	 caption: "Take a look around!",
+	 loading_img: 'assets/photosphere-logo.gif',
+	 anim_speed: '-2rpm',
+	 default_fov: 90,
+	 fisheye: false,
+	 move_speed: 1.0,
+	 time_anim: false,
+	 mousewheel:false,
+	 navbar: [
+	     'caption','gyroscope', //'stereo', 'zoom'
+	 ],
+     });
+     PSV.logmouse = true;
+
+     var $TABLE = $('#table');
+     function table_show(){
+	 var showaninstruction = document.getElementById('showaninstruction');
+	 var instructions = document.getElementById('instructions');
+	 var shown = parseInt(instructions.getAttribute('shown')) + 1;
+	 var sid = parseInt(instructions.getAttribute('sid'));
+
+	 rows = $TABLE.children()[0].rows;
+	 trrow = $TABLE.children()[0].rows[shown];
+	 trrow.className = "rowopen";
+	 instructions.setAttribute('shown',shown.toString());
+	 var mh = document.getElementById("mousehistory");
+	 mh.innerText = mh.innerText + "_";
+	 if(shown >= sid)
+	     {
+		 document.getElementById("showaninstructionbutton").disabled = true;
+
+		 var waldoalert = document.getElementById('waldoalert');
+		 waldoalert.classList.remove("rowopen");
+		 waldoalert.classList.add("rowclosed");
+		 var clickalert = document.getElementById('clickalert');
+		 clickalert.classList.remove("rowclosed");
+		 clickalert.classList.add("rowopen");
+		 var predictalert = document.getElementById('predictalert');
+		 predictalert.classList.remove("rowopen");
+		 predictalert.classList.add("rowclosed");
+		 var categoryalert = document.getElementById('categoryalert');
+		 categoryalert.classList.remove("rowopen");
+		 categoryalert.classList.add("rowclosed");
+		 var nextalert = document.getElementById('nextalert');
+		 nextalert.classList.remove("rowopen");
+		 nextalert.classList.add("rowclosed");
+	     }
+
+     }
+
+
+     function table_clear()
+     {
+	 for(ii = 1; ii<=5;ii++)
+	     {
+		 row = document.getElementById('row' + (ii).toString());
+		 row.innerText= "Type your instruction sentence here!";
+		 trrow = document.getElementById('tr' + (ii).toString());
+		 trrow.className="rowclosed";
+	     }
+	 trrow = document.getElementById('tr' + (1).toString());
+	 trrow.className="rowopen";
+	 instructions.setAttribute('sid',1);
+     }
+
+     function next_image()
+     {
+
+	 var mh = document.getElementById("mousehistory");
+	 var progressbar = document.getElementById('progressbar');
+	 var feedback = progressbar.getAttribute('feedback');
+
+	 ann_cat = document.querySelector('input[name="annCategory"]:checked').value;
+	 ann_clr = document.querySelector('input[name="annClarity"]:checked').value;
+	 data = { "action_list": mh.innerText,
+		  "turkerid" : turkerid,
+		  "session" : session,
+		  "pred_longitude" :  dia.data("longitude"),
+		  "pred_latitude" : dia.data("latitude"),
+		  "start_longitude" :  dia.data("start_longitude"),
+		  "start_latitude" : dia.data("start_latitude"),
+		  "feedback_text": feedback,
+		  "annotationid" : dia.data("annotationid"),
+		  "ann_cat" : ann_cat,
+		  "ann_clr" : ann_clr,
+	 };
+
+	 $.post({
+	     url: 'https://vulcan.multicomp.cs.cmu.edu:9001/onboarding_actions/',
+	     data: data,
+	     dataType: 'json',
+	     type: "POST",
+	     success: function(data) {
+		 if (data) {
+		     diadata.new_actions = data["new_actions"];
+		     var new_feedback = data['feedback_text'];
+ 		     progressbar.setAttribute("feedback",new_feedback);
+		 }
+		 else {
+		     alert('ERROR! cannot get new image!');
+		 }
+	     }
+	 });
+	 var valid = true;
+	 var instructions = document.getElementById('instructions');
+
+	 var progressbar = document.getElementById('progressbar');
+	 var progress = parseInt(progressbar.getAttribute('aria-valuenow'));
+	 var increment = 25;
+	 var total = "/"+(100 / increment).toString();
+
+	 progressbar.setAttribute('aria-valuenow',(parseInt(progress) + increment).toString());
+	 progressbar.innerText = ((parseInt(progress) + increment)/increment).toString() + total;
+	 progressbar.setAttribute("style", "width: " + (parseInt(progress) + increment).toString() + "%"); /// ###
+	 progress = parseInt(progress) + increment;
+
+	 var showaninstruction = document.getElementById('showaninstruction');
+	 showaninstruction.setAttribute('flag',"0");
+
+	 document.getElementById("showaninstructionbutton").disabled = false;
+	 document.getElementById("submitinstructions").disabled = true;
+	 document.getElementById("predictwaldo").disabled = true;
+	 document.getElementById("removealert").disabled = true;
+
+	 var anncatbuttons = document.getElementById('anncatbuttons');
+	 anncatbuttons.classList.remove("rowopen");
+	 anncatbuttons.classList.add("rowclosed");
+
+	 var waldoalert = document.getElementById('waldoalert');
+	 waldoalert.classList.remove("rowclosed");
+	 waldoalert.classList.add("rowopen");
+	 var clickalert = document.getElementById('clickalert');
+	 clickalert.classList.remove("rowopen");
+	 clickalert.classList.add("rowclosed");
+	 var predictalert = document.getElementById('predictalert');
+	 predictalert.classList.remove("rowopen");
+	 predictalert.classList.add("rowclosed");
+	 var categoryalert = document.getElementById('categoryalert');
+	 categoryalert.classList.remove("rowopen");
+	 categoryalert.classList.add("rowclosed");
+	 var nextalert = document.getElementById('nextalert');
+	 nextalert.classList.remove("rowopen");
+	 nextalert.classList.add("rowclosed");
+
+	 document.querySelector('input[name="annCategory"]:checked').checked = false;
+	 document.querySelector('input[name="annClarity"]:checked').checked = false;
+
+	 table_clear();
+	 PSV.removeMarker(PSV.getMarker(dia.data("markerid")));
+	 PSV.removeMarker(PSV.getMarker("gt_marker"));
+	 init_canvas();
+	 var mh = document.getElementById("mousehistory");
+	 mh.innerText = "";
+
+	 diadata = dia.data();
+	 var new_action = diadata['new_actions'];
+	 var actions=progressbar.getAttribute("actions");
+	 progressbar.setAttribute('actions',actions + "|" + new_action);
+	 var feedback = progressbar.getAttribute('feedback');
+
+	 if(progress >= 100)
+	     {
+		 var sandbox="0";
+		 if(fullurl.includes("sandbox")){
+		     sandbox="1";
+		 }
+		 var actions=progressbar.getAttribute('actions');
+		 window.location = "https://vulcan.multicomp.cs.cmu.edu:9000/refer360mturk/random_describing.html?workerId=" + turkerid + '&session=' + session;
+	     }
+     }
+
+     function getRandomArbitrary(min, max) {
+	 return Math.random() * (max - min) + min;
+     }
+
+
+     function predict_waldo()
+     {
+	 gt_marker = PSV.addMarker({
+	     id: "gt_marker",
+	     tooltip: "I was here!",
+	     longitude: dia.data("gt_longitude"),
+	     latitude: dia.data("gt_latitude"),
+	     image: 'assets/pin1.png',
+	     width: 40,
+	     height: 40,
+	     anchor: 'bottom center',
+	     data: {
+		 deletable: false
+	     }});
+	 var diadata = dia.data();
+	 marker = PSV.getMarker(dia.data("markerid"));
+	 marker.data.deletable = false;
+
+	 PSV.gotoMarker(gt_marker, 1000);
+
+	 document.getElementById("submitinstructions").disabled = true;
+	 document.getElementById("predictwaldo").disabled = true;
+	 document.getElementById("removealert").disabled = true;
+
+	 var anncatbuttons = document.getElementById('anncatbuttons');
+	 anncatbuttons.classList.remove("rowclosed");
+	 anncatbuttons.classList.add("rowopen");
+
+	 var waldoalert = document.getElementById('waldoalert');
+	 waldoalert.classList.remove("rowopen");
+	 waldoalert.classList.add("rowclosed");
+	 var clickalert = document.getElementById('clickalert');
+	 clickalert.classList.remove("rowopen");
+	 clickalert.classList.add("rowclosed");
+	 var predictalert = document.getElementById('predictalert');
+	 predictalert.classList.remove("rowopen");
+	 predictalert.classList.add("rowclosed");
+	 var categoryalert = document.getElementById('categoryalert');
+	 categoryalert.classList.remove("rowclosed");
+	 categoryalert.classList.add("rowopen");
+	 var nextalert = document.getElementById('nextalert');
+	 nextalert.classList.remove("rowopen");
+	 nextalert.classList.add("rowclosed");
+
+     }
+
+     $(function(){
+         //document.querySelector('input[name="annCategory"]:checked').checked = false;
+	 //document.querySelector('input[name="annClarity"]:checked').checked = false;
+	 $('input[type="radio"]').click(function(){
+	     c1 = $("#anncat1").is(":checked");
+	     c2 = $("#anncat2").is(":checked");
+	     c3 = $("#anncat3").is(":checked");
+	     c4 = $("#anncat4").is(":checked");
+	     c5 = $("#annclr1").is(":checked");
+	     c6 = $("#annclr2").is(":checked");
+	     c7 = $("#annclr3").is(":checked");
+	     if((c1 || c2 || c3 || c4) && (c5 || c6 || c7))
+		 {
+		     document.getElementById("submitinstructions").disabled = false;
+		     document.getElementById("predictwaldo").disabled = true;
+		     document.getElementById("removealert").disabled = true;
+
+		     var waldoalert = document.getElementById('waldoalert');
+		     waldoalert.classList.remove("rowopen");
+		     waldoalert.classList.add("rowclosed");
+		     var clickalert = document.getElementById('clickalert');
+		     clickalert.classList.remove("rowopen");
+		     clickalert.classList.add("rowclosed");
+		     var predictalert = document.getElementById('predictalert');
+		     predictalert.classList.remove("rowopen");
+		     predictalert.classList.add("rowclosed");
+		     var categoryalert = document.getElementById('categoryalert');
+		     categoryalert.classList.remove("rowopen");
+		     categoryalert.classList.add("rowclosed");
+		     var nextalert = document.getElementById('nextalert');
+		     nextalert.classList.remove("rowclosed");
+		     nextalert.classList.add("rowopen");
+		 }
+	 });
+     });
+     PSV.zoom(0);
+
+     PSV.on('click', function(e) {
+	 var showaninstruction = document.getElementById('showaninstruction');
+	 var flag = showaninstruction.getAttribute('flag');
+
+	 if(flag == "0")
+	     {
+		 var diadata = dia.data();
+		 diadata.longitude =  e.longitude + 0.015;
+		 diadata.latitude = e.latitude - 0.10;
+
+		 var markerid = '#' + Math.random()
+		 marker = PSV.addMarker({
+		     id: markerid,
+		     tooltip: "He should be here! Double click to remove.",
+		     longitude: dia.data("longitude"),
+		     latitude: dia.data("latitude"),
+		     image: 'assets/target.png',
+		     width: 40,
+		     height: 40,
+		     anchor: 'bottom center',
+		     data: {
+			 deletable: true
+		     }});
+
+		 diadata.markerid=markerid;
+		 showaninstruction.setAttribute('flag',"1");
+
+		 document.getElementById("submitinstructions").disabled = true;
+		 document.getElementById("predictwaldo").disabled = false;
+		 document.getElementById("removealert").disabled = false;
+
+		 var anncatbuttons = document.getElementById('anncatbuttons');
+		 anncatbuttons.classList.remove("rowopen");
+		 anncatbuttons.classList.add("rowclosed");
+
+		 var waldoalert = document.getElementById('waldoalert');
+		 waldoalert.classList.remove("rowopen");
+		 waldoalert.classList.add("rowclosed");
+		 var clickalert = document.getElementById('clickalert');
+		 clickalert.classList.remove("rowopen");
+		 clickalert.classList.add("rowclosed");
+		 var predictalert = document.getElementById('predictalert');
+		 predictalert.classList.remove("rowclosed");
+		 predictalert.classList.add("rowopen");
+		 var categoryalert = document.getElementById('categoryalert');
+		 categoryalert.classList.remove("rowopen");
+		 categoryalert.classList.add("rowclosed");
+		 var nextalert = document.getElementById('nextalert');
+		 nextalert.classList.remove("rowopen");
+		 nextalert.classList.add("rowclosed");
+
+	     }
+     });
+
+     function remove_waldo()
+     {
+	 PSV.removeMarker(PSV.getMarker(dia.data("markerid")));
+
+	 document.getElementById("submitinstructions").disabled = true;
+	 document.getElementById("predictwaldo").disabled = true;
+	 document.getElementById("removealert").disabled = true;
+
+	 var showaninstruction = document.getElementById('showaninstruction');
+	 showaninstruction.setAttribute('flag',"0");
+
+	 var anncatbuttons = document.getElementById('anncatbuttons');
+	 anncatbuttons.classList.remove("rowopen");
+	 anncatbuttons.classList.add("rowclosed");
+
+	 var waldoalert = document.getElementById('waldoalert');
+	 waldoalert.classList.remove("rowopen");
+	 waldoalert.classList.add("rowclosed");
+	 var clickalert = document.getElementById('clickalert');
+	 clickalert.classList.remove("rowclosed");
+	 clickalert.classList.add("rowopen");
+	 var predictalert = document.getElementById('predictalert');
+	 predictalert.classList.remove("rowopen");
+	 predictalert.classList.add("rowclosed");
+	 var categoryalert = document.getElementById('categoryalert');
+	 categoryalert.classList.remove("rowopen");
+	 categoryalert.classList.add("rowclosed");
+	 var nextalert = document.getElementById('nextalert');
+	 nextalert.classList.remove("rowopen");
+	 nextalert.classList.add("rowclosed");
+     }
+
+     PSV.on('select-marker', function(marker, dblclick) {
+	 if (marker.data && marker.data.deletable) {
+	     if (dblclick) {
+		 PSV.removeMarker(marker);
+
+		 document.getElementById("submitinstructions").disabled = true;
+		 document.getElementById("predictwaldo").disabled = true;
+		 document.getElementById("removealert").disabled = true;
+
+		 var showaninstruction = document.getElementById('showaninstruction');
+		 showaninstruction.setAttribute('flag',"0");
+
+		 var anncatbuttons = document.getElementById('anncatbuttons');
+		 anncatbuttons.classList.remove("rowopen");
+		 anncatbuttons.classList.add("rowclosed");
+
+		 var waldoalert = document.getElementById('waldoalert');
+		 waldoalert.classList.remove("rowopen");
+		 waldoalert.classList.add("rowclosed");
+		 var clickalert = document.getElementById('clickalert');
+		 clickalert.classList.remove("rowclosed");
+		 clickalert.classList.add("rowopen");
+		 var predictalert = document.getElementById('predictalert');
+		 predictalert.classList.remove("rowopen");
+		 predictalert.classList.add("rowclosed");
+		 var categoryalert = document.getElementById('categoryalert');
+		 categoryalert.classList.remove("rowopen");
+		 categoryalert.classList.add("rowclosed");
+		 var nextalert = document.getElementById('nextalert');
+		 nextalert.classList.remove("rowopen");
+		 nextalert.classList.add("rowclosed");
+
+	     }
+	     else {
+	     }
+	 }
+     });
+
+     function init_canvas()
+     {
+	 $.post({
+	     url: 'https://vulcan.multicomp.cs.cmu.edu:9001/onboarding/' + turkerid + "/",
+	     dataType: 'json',
+	     type: "GET",
+	     data: {"imageurl":"check"},
+	     success: function(data) {
+		 diadata = dia.data();
+		 if (data) {
+		     if(data['imageurl'] == "")
+			 {
+			     window.location = "https://vulcan.multicomp.cs.cmu.edu:9000/refer360mturk/random_describing.html?workerId=" + turkerid + '&session=' + session;
+			 }
+		     diadata.imageurl =  data['imageurl'];
+		     diadata.gt_latitude =  data['latitude'];
+		     diadata.gt_longitude = data['longitude'];
+		     diadata.gt_refexp = data['refexp'];
+		     diadata.annotationid = data['annotationid'];
+		     diadata.start_longitude = getRandomArbitrary(0, 6);
+		     diadata.start_latitude = getRandomArbitrary(1, 1.5);
+
+		     var refexps = diadata.gt_refexp.split("|||");
+		     var diff = 1;
+		     var total_refexp = refexps.length;
+		     if(refexps[0] == ''){diff = 0; total_refexp = total_refexp -1};
+
+		     var instructions = document.getElementById('instructions');
+		     instructions.setAttribute('sid',total_refexp.toString());
+		     instructions.setAttribute('shown',"1");
+		     for(ii=1; ii <= refexps.length; ii++){
+			 row = document.getElementById('row'+  ii.toString());
+			 rows = $TABLE.children()[0].rows;
+			 trrow = $TABLE.children()[0].rows[ii];
+			 //trrow.className = "rowopen";
+			 row.innerText = refexps[ii - diff];
+		     }
+
+		     PSV.setPanorama(data['imageurl'],{longitude: diadata.start_longitude,latitude: diadata.start_latitude}, true)
+			.then(function() {
+			    PSV.setCaption("Take a look around!");
+			    loading = false;
+			});
+		 }
+	     }
+	 });
+
+     }
+
+     $(document).ready(function() {
+	 content.toggle();
+	 mainRow.toggle();
+	 init_canvas();
+     });
+</script>
+</body>
+</html>

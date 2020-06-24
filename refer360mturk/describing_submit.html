@@ -1,0 +1,59 @@
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div id="passphrase" class="font-weight-bold alert alert-success text-center" role="alert">
+    </div>
+    <div class="alert alert-success text-center" role="alert">
+	Please copy-paste this passphrase to above text box!
+    </div>
+    <h4 class="alert alert-info" role="alert" >Thanks for working on this task! We are still working on improving our annoation setup, please provide your feedback below!</h4>
+    <div class="row" style="margin-left: 10px;">
+	<textarea id="feedback" name="feedback" style="resize: none" rows=10 cols=60 placeholder="Enter any feedback you have about the task here"></textarea></br></br>
+
+	<button id="addfeedback" class="btn btn-success" onclick="submit_feedback()">Add Feedback</button>
+	<button id="feedbackadded" class="btn btn-danger" type="button" disabled="true" style="display:none;">
+	    Feedback is added, Thanks!</button>
+    </div>
+
+</body>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script language="javascript">
+ function escapeHtml(str) {
+     var div = document.createElement('div');
+     div.appendChild(document.createTextNode(str));
+     return div.innerHTML;
+ }
+
+ var fullurl=document.location.href;
+ var queryDict = {};
+ location.search.substr(1).split("&").forEach(function(item) {queryDict[item.split("=")[0]] = item.split("=")[1]})
+
+ passphrase = document.getElementById("passphrase");
+ escaped_str = escapeHtml("Your Passphrase: "+queryDict["feedback"]);
+ passphrase.innerText= escaped_str;
+
+ function submit_feedback(){
+     var feedback_text = queryDict["feedback"];
+     var feedback_detail = document.getElementById('feedback').value;
+     var data = {"feedback_text" : feedback_text,
+ "feedback_detail" : feedback_detail};
+     $.post({
+	 url: 'https://vulcan.multicomp.cs.cmu.edu:9001/feedback/'+feedback_text + '/',
+	 data: data,
+	 dataType: 'json',
+	 type: "PUT",
+	 success: function(data) {}
+     });
+     var add = $("#addfeedback");
+     var added = $("#feedbackadded");
+     add.toggle();
+     added.toggle();
+     f = document.getElementById('feedback');
+     f.disabled=true;
+
+ }
+
+</script>
